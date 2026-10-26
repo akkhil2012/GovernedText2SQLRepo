@@ -1,0 +1,14 @@
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix bank: <https://example.org/bank#> .
+@prefix map: <https://example.org/mapping/> .
+map:eligible a rr:TriplesMap ;
+ rr:logicalTable [ rr:sqlQuery "SELECT DISTINCT customer_id, tenant FROM eligible_facts" ] ;
+ rr:subjectMap [ rr:template "https://example.org/customer/{tenant}/{customer_id}" ;
+                 rr:class bank:EligibleCustomer ] ;
+ rr:predicateObjectMap [ rr:predicate bank:tenant ; rr:objectMap [ rr:column "tenant" ; rr:datatype xsd:string ] ] .
+map:conversion a rr:TriplesMap ;
+ rr:logicalTable [ rr:sqlQuery "SELECT customer_id, tenant, contact_id FROM eligible_facts WHERE converted = 1" ] ;
+ rr:subjectMap [ rr:template "https://example.org/customer/{tenant}/{customer_id}" ] ;
+ rr:predicateObjectMap [ rr:predicate bank:hasConversion ;
+ rr:objectMap [ rr:template "https://example.org/conversion/{contact_id}" ] ] .

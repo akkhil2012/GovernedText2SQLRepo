@@ -1,0 +1,6 @@
+# Development/CI only; do not use this override for shared hosting.
+services:
+  postgres:
+    ports: ["127.0.0.1:54329:5432"]
+  ontop:
+    ports: ["127.0.0.1:8089:8080"]
