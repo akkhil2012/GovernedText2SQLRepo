@@ -6,3 +6,4 @@ __pycache__/
 .env
 work/
 *.jsonl
+node_modules/

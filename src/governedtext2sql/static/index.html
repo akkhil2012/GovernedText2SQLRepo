@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta
+      name="description"
+      content="Compare direct LLM SQL, Semantic RAG, and Ontop virtual knowledge graphs on governed banking analytics."
+    />
+    <title>GovernedText2SQL · Query Studio</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230e7366'/%3E%3Cpath d='M8 9h16v4H8zm0 7h10v3H8zm0 6h16v3H8z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#workspace">Skip to workspace</a>
+    <aside class="sidebar">
+      <a class="brand" href="/" aria-label="GovernedText2SQL home"
+        ><span class="brand-mark">G<span>↗</span></span
+        ><span>Governed<span class="brand-sub">Text2SQL</span></span></a
+      >
+      <div class="sidebar-label">ANALYTICS WORKSPACE</div>
+      <nav aria-label="Main navigation">
+        <a class="nav-link active" href="#workspace"
+          ><span aria-hidden="true">▦</span> Query studio
+          <span class="nav-tag">LAB</span></a
+        >
+        <a class="nav-link" href="#comparison"
+          ><span aria-hidden="true">⇄</span> Compare approaches</a
+        >
+        <a class="nav-link" href="#methodology"
+          ><span aria-hidden="true">◇</span> How it works</a
+        >
+        <a class="nav-link" href="/docs" target="_blank" rel="noopener"
+          ><span aria-hidden="true">⌘</span> API reference
+          <span class="external">↗</span></a
+        >
+      </nav>
+      <div class="sidebar-note">
+        <span class="small-orbit" aria-hidden="true">✳</span
+        ><strong>Meaning matters.</strong>
+        <p>Explore what changes when your data understands your business.</p>
+        <a href="#methodology">Explore the architecture <span>↗</span></a>
+      </div>
+      <div class="sidebar-bottom">
+        <span class="status-dot"></span> Synthetic banking dataset
+        <div>PostgreSQL · OWL · Ontop</div>
+      </div>
+    </aside>
+    <div class="page">
+      <header class="topbar">
+        <div>
+          <span class="breadcrumb">Workspace</span
+          ><span class="slash">/</span>Query studio
+        </div>
+        <div class="topbar-right">
+          <span class="environment" id="environment">Not connected</span
+          ><span class="avatar" aria-hidden="true">GT</span>
+        </div>
+      </header>
+      <main id="workspace">
+        <section class="page-heading">
+          <div>
+            <div class="eyebrow">
+              <span></span> THE TEXT-TO-SQL COMPARISON LAB
+            </div>
+            <h1>One question. Three perspectives.</h1>
+            <p>
+              Go beyond a valid query. See the difference a semantic foundation
+              makes.
+            </p>
+          </div>
+          <a class="text-link" href="#methodology"
+            >Behind the query <span>↗</span></a
+          >
+        </section>
+        <section class="connection-panel" aria-label="API connection">
+          <div class="connection-icon" aria-hidden="true">⌁</div>
+          <div class="connection-description">
+            <strong id="connection-title">Connect your workspace</strong
+            ><span id="connection-description"
+              >Use your API key to run queries with your assigned tenant and
+              role.</span
+            >
+          </div>
+          <form id="connection-form">
+            <label class="sr-only" for="api-key">API key</label
+            ><input
+              id="api-key"
+              type="password"
+              placeholder="Enter your API key"
+              autocomplete="off"
+              required
+            /><button
+              class="button secondary"
+              id="connect-button"
+              type="submit"
+            >
+              Connect <span aria-hidden="true">↗</span>
+            </button>
+          </form>
+        </section>
+        <div
+          id="notice"
+          class="notice"
+          role="status"
+          aria-live="polite"
+          hidden
+        ></div>
+        <section class="composer panel" aria-labelledby="question-heading">
+          <div class="section-kicker">
+            <span class="step-number">01</span> ASK YOUR DATA
+            <span class="right-tag">BANKING & MARKETING</span>
+          </div>
+          <label id="question-heading" for="question"
+            >What would you like to know?</label
+          >
+          <div class="question-wrap">
+            <span aria-hidden="true">⌕</span
+            ><textarea id="question" maxlength="1000" rows="2">
+How many eligible customers?</textarea
+            ><kbd>⌘ / Ctrl ↵</kbd>
+          </div>
+          <div class="examples">
+            <span>Try an example</span
+            ><button data-question="How many eligible customers?">
+              Eligible customers <span>↗</span></button
+            ><button data-question="How many conversions?">
+              Conversions <span>↗</span></button
+            ><button data-question="What is the conversion rate?">
+              Conversion rate <span>↗</span>
+            </button>
+          </div>
+          <div class="composer-divider"></div>
+          <div class="mode-heading">
+            <div>
+              <span class="step-number">02</span
+              ><strong>Choose your approaches</strong
+              ><span class="muted">Select one, or compare all three.</span>
+            </div>
+            <button class="plain-button" id="select-all">Select all</button>
+          </div>
+          <div class="approach-grid">
+            <label class="approach blue"
+              ><input
+                type="checkbox"
+                name="mode"
+                value="baseline"
+                checked
+              /><span class="approach-icon" aria-hidden="true">⌘</span
+              ><span class="approach-step">01 / DIRECT</span
+              ><strong>LLM → SQL</strong
+              ><span class="approach-description"
+                >Straight from natural language to SQL, using the physical
+                schema.</span
+              ><span class="approach-footer"
+                >Schema-aware <span>Direct generation</span></span
+              ></label
+            >
+            <label class="approach amber"
+              ><input
+                type="checkbox"
+                name="mode"
+                value="semantic"
+                checked
+              /><span class="approach-icon" aria-hidden="true">▤</span
+              ><span class="approach-step">02 / CONTEXTUAL</span
+              ><strong>LLM + Semantic RAG</strong
+              ><span class="approach-description"
+                >Retrieve business definitions, then build a governed metric
+                plan.</span
+              ><span class="approach-footer"
+                >Context-aware <span>Catalog retrieval</span></span
+              ></label
+            >
+            <label class="approach green"
+              ><input type="checkbox" name="mode" value="vkg" checked /><span
+                class="approach-icon"
+                aria-hidden="true"
+                >⌬</span
+              ><span class="approach-step">03 / ONTOLOGY-DRIVEN</span
+              ><strong>VKG + Ontop</strong
+              ><span class="approach-description"
+                >Ground the question in an ontology. Let Ontop translate
+                SPARQL.</span
+              ><span class="approach-footer"
+                >Meaning-aware <span>OWL + R2RML</span></span
+              ></label
+            >
+          </div>
+          <div class="run-row">
+            <span class="privacy-note"
+              ><span aria-hidden="true">◇</span> Read-only · Tenant-scoped ·
+              Audited</span
+            ><button id="run-button" class="button primary" disabled>
+              <span aria-hidden="true">▷</span
+              ><span id="run-label">Run comparison</span>
+              <span class="button-count" id="mode-count">3</span>
+            </button>
+          </div>
+        </section>
+        <section id="comparison" aria-labelledby="comparison-heading">
+          <div class="results-heading">
+            <div>
+              <div class="section-kicker">
+                <span class="step-number">03</span> EXPLORE THE DIFFERENCE
+              </div>
+              <h2 id="comparison-heading">Your results, side by side</h2>
+            </div>
+            <button
+              class="button secondary export-button"
+              id="export-button"
+              disabled
+            >
+              <span aria-hidden="true">↓</span> Export run
+            </button>
+          </div>
+          <p class="run-caption" id="run-caption">
+            Run a question to inspect results, generated queries and the work
+            behind each approach.
+          </p>
+          <div class="comparison-summary" id="comparison-summary" hidden></div>
+          <div class="result-grid" id="results" aria-live="polite"></div>
+          <section
+            class="latency-panel panel"
+            id="latency-panel"
+            hidden
+            aria-labelledby="latency-heading"
+          >
+            <div>
+              <div class="section-kicker">MEASURED, NOT ESTIMATED</div>
+              <h3 id="latency-heading">Where the time goes</h3>
+              <p>
+                Server-side planning and execution for this run. Lower is
+                faster.
+              </p>
+            </div>
+            <div id="latency-chart" class="latency-chart"></div>
+            <p class="chart-note">
+              Stages include connection and network overhead. Ontop rewriting
+              and database execution share one measured stage. Single-run
+              latency is not a benchmark.
+            </p>
+          </section>
+        </section>
+        <section
+          class="methodology panel"
+          id="methodology"
+          aria-labelledby="methodology-heading"
+        >
+          <div class="section-kicker">UNDER THE HOOD</div>
+          <div class="method-heading">
+            <h2 id="methodology-heading">Three paths. One governed dataset.</h2>
+            <span class="tag">TRANSPARENCY BY DESIGN</span>
+          </div>
+          <div class="method-grid">
+            <article>
+              <span class="method-number blue-text">01</span>
+              <h3>Direct LLM SQL</h3>
+              <p>
+                Question → schema prompt → generated SQL → SQL policy validation
+                → PostgreSQL.
+              </p>
+              <small
+                >A query can execute successfully while counting the wrong
+                thing.</small
+              >
+            </article>
+            <article>
+              <span class="method-number amber-text">02</span>
+              <h3>Semantic retrieval</h3>
+              <p>
+                Question → retrieved catalog definitions → typed metric plan →
+                reviewed SQL → PostgreSQL.
+              </p>
+              <small
+                >Local lexical retrieval supplies business context; no vector
+                database is required.</small
+              >
+            </article>
+            <article>
+              <span class="method-number green-text">03</span>
+              <h3>Virtual knowledge graph</h3>
+              <p>
+                Question → typed metric plan → SPARQL → Ontop OWL rewriting +
+                R2RML unfolding → PostgreSQL.
+              </p>
+              <small
+                >EligibleCustomer is inferred as MarketableCustomer through
+                subclass reasoning.</small
+              >
+            </article>
+          </div>
+          <div class="method-footnote">
+            <strong>A fair comparison.</strong> Result agreement is not an
+            accuracy score. The fixture planner deliberately demonstrates
+            baseline mistakes; live LLM results may differ. All approaches share
+            access controls. Only the three unfiltered metrics shown above are
+            supported.
+          </div>
+        </section>
+        <footer>
+          <span class="footer-brand"
+            >GovernedText2SQL <span>/</span> Query Studio</span
+          ><span>Built for explainable, governed analytics.</span
+          ><a href="/docs" target="_blank" rel="noopener">API docs ↗</a>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>

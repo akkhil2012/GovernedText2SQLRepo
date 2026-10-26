@@ -1,8 +1,12 @@
+import os
 import time
 import uuid
+from pathlib import Path
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, Header, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 
 from .domain import Query
 from .engine import Engine
@@ -47,3 +51,23 @@ def query(body: Query, principal: Annotated[object, Depends(identity)]):
     elapsed = (time.perf_counter() - start) * 1000
     audit({**event, "outcome": "allowed", "latency_ms": elapsed})
     return {"request_id": request_id, "mode": body.mode, "latency_ms": elapsed, **result}
+
+
+STATIC = Path(__file__).parent / "static"
+app.mount("/static", StaticFiles(directory=STATIC), name="static")
+
+
+@app.get("/", include_in_schema=False)
+def dashboard():
+    return FileResponse(STATIC / "index.html", headers={"Cache-Control": "no-cache"})
+
+
+@app.get("/v1/session")
+def session(principal: Annotated[object, Depends(identity)]):
+    return {
+        "subject": principal.subject,
+        "tenant": principal.tenant,
+        "role": principal.role,
+        "planner": os.getenv("PLANNER", "fixture"),
+        "model": os.getenv("LLM_MODEL", "gpt-4.1-mini") if os.getenv("PLANNER") == "llm" else None,
+    }

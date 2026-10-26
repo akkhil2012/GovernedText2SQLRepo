@@ -1,7 +1,7 @@
 # GovernedText2SQL
 
 A production-style reference repository comparing baseline LLM SQL, a curated
-semantic layer, and an ontology-driven Virtual Knowledge Graph powered by Ontop.
+semantic RAG layer, and an ontology-driven Virtual Knowledge Graph powered by Ontop.
 Python 3.11+, FastAPI, PostgreSQL 16, OWL/RDF, R2RML, SPARQL, Compose and pytest.
 All banking data is synthetic. This is an executable demonstration with explicit
 production hardening boundaries, not a banking-ready service.
@@ -19,6 +19,16 @@ python -m venv .venv
 pip install -c requirements.lock -e '.[test]'
 python examples/client.py
 ```
+
+Open **http://localhost:8000** for the Query Studio dashboard. Enter the API key
+configured in `.env`, choose one or more approaches, and run the same question
+side by side. The key stays in the tab's memory and clears on refresh.
+
+The dashboard includes generated SQL/SPARQL, real stage timings, retrieved
+business definitions, result agreement, per-mode errors and JSON export.
+Semantic RAG uses a local lexical TF-IDF catalog retriever; no embedding service
+or vector database is required. Demo/live model status is shown explicitly.
+Ontop's actual unfolded SQL is internal; the dashboard shows the submitted SPARQL.
 
 API docs: http://localhost:8000/docs. API binds to localhost. Database and Ontop
 are private by default. `POST /v1/query` accepts question and mode (baseline,
@@ -52,6 +62,23 @@ a shared host. CI runs unit and real Ontop/PostgreSQL integration suites and
 uploads the measured evaluation JSON. Reports distinguish semantic accuracy from
 successful SQL execution and include latency and policy-probe outcomes.
 See [evaluation protocol](docs/evaluation.md) for limits and fair interpretation.
+
+## Browser workflow checks
+
+The UI needs no JavaScript build or external fonts. Static assets ship in the
+Python wheel and API container. Optional browser checks exercise the real stack:
+
+```sh
+npm install --no-save --package-lock=false playwright@1.58.2
+npx playwright install chromium
+BROWSER_API_KEY="$API_KEY" node examples/browser_smoke.cjs
+```
+
+Use the north-tenant demo fixture for these checks. `BROWSER_URL` defaults to
+`http://localhost:8000`; `CHROMIUM_PATH` optionally selects installed Chromium.
+Checks cover authentication, three-mode runs, retrieval/pipeline tabs, export,
+conversion rate, policy denials, single-mode runs and mobile overflow. Screenshots
+and the export are saved under ignored `work/`.
 
 ## Repository guide
 
