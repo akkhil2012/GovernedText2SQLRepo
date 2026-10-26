@@ -1,0 +1,13 @@
+@prefix bank: <https://example.org/bank#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+bank: a owl:Ontology .
+bank:Customer a owl:Class .
+bank:EligibleCustomer a owl:Class ; rdfs:subClassOf bank:MarketableCustomer ;
+ rdfs:comment "Adult, active, explicitly consented; operationalized in R2RML SQL." .
+bank:MarketableCustomer a owl:Class ; rdfs:subClassOf bank:Customer .
+bank:Conversion a owl:Class .
+bank:tenant a owl:DatatypeProperty ; rdfs:range xsd:string .
+bank:hasConversion a owl:ObjectProperty ; rdfs:domain bank:EligibleCustomer ;
+ rdfs:range bank:Conversion .

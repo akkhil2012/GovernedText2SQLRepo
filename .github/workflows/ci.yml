@@ -1,0 +1,40 @@
+name: checks
+on: [push, pull_request]
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -c requirements.lock -e '.[test]'
+      - run: ruff check src tests examples
+      - run: pytest -m 'not integration' -q
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -c requirements.lock -e '.[test]'
+      - run: |
+          cp .env.example .env
+          docker compose -f compose.yaml -f compose.test.yaml up -d --build
+          python examples/wait_ready.py
+      - run: pytest -m integration -q
+        env:
+          RUN_INTEGRATION: '1'
+          DATABASE_URL: postgresql://analytics:analytics_demo@localhost:54329/banking
+          ONTOP_URL: http://localhost:8089/sparql
+      - run: python examples/evaluate.py
+        env:
+          DATABASE_URL: postgresql://analytics:analytics_demo@localhost:54329/banking
+          ONTOP_URL: http://localhost:8089/sparql
+      - uses: actions/upload-artifact@v4
+        with:
+          name: evaluation
+          path: work/evaluation.json
+      - if: always()
+        run: docker compose logs && docker compose down -v

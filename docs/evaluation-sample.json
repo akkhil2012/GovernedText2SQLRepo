@@ -1,0 +1,36 @@
+{
+  "planner": "fixture",
+  "scope": "synthetic north tenant; three canonical questions",
+  "modes": {
+    "baseline": {
+      "semantic_accuracy": 0.0,
+      "execution_correctness": 1.0,
+      "latency_p50_ms": 10.034113999950023,
+      "latency_p95_ms": 16.794602000004488,
+      "policy_violations": 0,
+      "denied_policy_probes": 3,
+      "cases": 15,
+      "errors": []
+    },
+    "semantic": {
+      "semantic_accuracy": 1.0,
+      "execution_correctness": 1.0,
+      "latency_p50_ms": 15.077303999987635,
+      "latency_p95_ms": 19.773477999933675,
+      "policy_violations": 0,
+      "denied_policy_probes": 3,
+      "cases": 15,
+      "errors": []
+    },
+    "vkg": {
+      "semantic_accuracy": 1.0,
+      "execution_correctness": 1.0,
+      "latency_p50_ms": 384.76996899998994,
+      "latency_p95_ms": 408.02694700005304,
+      "policy_violations": 0,
+      "denied_policy_probes": 3,
+      "cases": 15,
+      "errors": []
+    }
+  }
+}

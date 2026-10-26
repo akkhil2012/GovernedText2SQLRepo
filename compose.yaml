@@ -1,0 +1,48 @@
+services:
+  postgres:
+    image: postgres:16.6
+    environment:
+      POSTGRES_DB: banking
+      POSTGRES_USER: bootstrap
+      POSTGRES_PASSWORD: bootstrap_demo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -h 127.0.0.1 -U bootstrap -d banking"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+  ontop:
+    build:
+      context: .
+      dockerfile: ontop/Dockerfile
+    environment:
+      ONTOP_ONTOLOGY_FILE: /opt/ontop/input/ontology.ttl
+      ONTOP_MAPPING_FILE: /opt/ontop/input/mapping.ttl
+      ONTOP_PROPERTIES_FILE: /opt/ontop/input/ontop.properties
+    volumes:
+      - ./ontop:/opt/ontop/input:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+  api:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://analytics:analytics_demo@postgres:5432/banking
+      ONTOP_URL: http://ontop:8080/sparql
+      PLANNER: ${PLANNER:-fixture}
+      API_KEYS: '${API_KEYS:?Set API_KEYS as documented in .env.example}'
+      LLM_URL: ${LLM_URL:-}
+      LLM_API_KEY: ${LLM_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-gpt-4.1-mini}
+    ports: ["127.0.0.1:8000:8000"]
+    volumes: ["audit:/app/audit"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ontop:
+        condition: service_started
+volumes:
+  pgdata:
+  audit:
