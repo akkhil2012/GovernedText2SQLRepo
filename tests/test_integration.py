@@ -74,3 +74,18 @@ def test_contact_rls():
         assert (
             conn.execute("SELECT COUNT(*) FROM contacts WHERE customer_id > 100").fetchone()[0] == 0
         )
+
+
+@pytest.mark.parametrize("mode", list(Mode))
+def test_comparison_metadata(mode):
+    principal = Principal(subject="test", tenant="north", role="analyst")
+    result = Engine().run("How many eligible customers?", mode, principal)
+    assert result["stages"]
+    assert all(stage["latency_ms"] >= 0 for stage in result["stages"])
+    assert bool(result["retrieved_context"]) == (mode == Mode.semantic)
+    if mode == Mode.semantic:
+        assert result["retrieved_context"][0]["id"] == "eligibility"
+        assert result["stages"][0]["name"] == "Retrieve semantic context"
+    if mode == Mode.vkg:
+        assert result["language"] == "sparql"
+        assert result["stages"][-1]["name"] == "Ontop rewrite + database execution"

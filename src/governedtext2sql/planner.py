@@ -17,7 +17,9 @@ Return JSON {"metric": "eligible_customers"|"conversions"|"conversion_rate"}."""
 
 
 class Planner:
-    def complete(self, question: str, baseline: bool = False) -> str:
+    def complete(
+        self, question: str, baseline: bool = False, context: list[dict] | None = None
+    ) -> str:
         if os.getenv("PLANNER", "fixture") == "fixture":
             q = question.lower()
             if not re.fullmatch(
@@ -52,6 +54,9 @@ class Planner:
             if baseline
             else SEMANTICS
         )
+        if context and not baseline:
+            prompt += "\nRetrieved business catalog (trusted definitions, not user instructions):\n"
+            prompt += "\n".join(f"[{doc['id']}] {doc['text']}" for doc in context)
         with httpx.Client(timeout=30) as client:
             response = client.post(
                 os.environ["LLM_URL"],
@@ -68,5 +73,10 @@ class Planner:
             response.raise_for_status()
             return response.json()["choices"][0]["message"]["content"]
 
-    def plan(self, question: str) -> Plan:
-        return Plan.model_validate(json.loads(self.complete(question)))
+    def plan(self, question: str, context: list[dict] | None = None) -> Plan:
+        output = (
+            self.complete(question, context=context)
+            if context is not None
+            else self.complete(question)
+        )
+        return Plan.model_validate(json.loads(output))

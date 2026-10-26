@@ -28,6 +28,14 @@ jobs:
           RUN_INTEGRATION: '1'
           DATABASE_URL: postgresql://analytics:analytics_demo@localhost:54329/banking
           ONTOP_URL: http://localhost:8089/sparql
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --package-lock=false playwright@1.58.2
+      - run: npx playwright install --with-deps chromium
+      - run: node examples/browser_smoke.cjs
+        env:
+          BROWSER_API_KEY: replace-with-a-long-random-token
       - run: python examples/evaluate.py
         env:
           DATABASE_URL: postgresql://analytics:analytics_demo@localhost:54329/banking
@@ -35,6 +43,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: evaluation
-          path: work/evaluation.json
+          path: |
+            work/evaluation.json
+            work/dashboard-desktop.png
+            work/dashboard-mobile.png
       - if: always()
         run: docker compose logs && docker compose down -v
